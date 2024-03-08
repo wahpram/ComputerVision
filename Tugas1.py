@@ -1,108 +1,109 @@
 import PIL.Image
 import tkinter.filedialog
 from PIL import ImageTk
+from math import *
 from tkinter import *
 from array import *
 from pathlib import Path
 from tkinter import simpledialog
 
-global arr, w, h
 
-def labels(root):
+def window(root):
     newBlank = PIL.Image.new('RGB', (204, 204), (255, 255, 255))
     newBlank = PIL.ImageTk.PhotoImage(newBlank)
-    
     label1 = Label(root, image=newBlank)
     label2 = Label(root, image=newBlank)
     label3 = Label(root, image=newBlank)
     label1.place(x=50, y=100)
     label2.place(x=300, y=100)
     label3.place(x=550, y=100)
-    
+
+
+def labelCreate(img, x, y):
+    newSize = img.resize((204, 204))
+    photo = PIL.ImageTk.PhotoImage(newSize)
+    myLabel = Label(image=photo)
+    myLabel.image = photo
+    myLabel.place(x=x, y=y)
+
 
 def readPixel(): 
-    global w, h, arr, l   
-    
-    x = 0
-    y = 0
+    global w, h, arr   
     arr = []
     l = []
+    key = ['x', 'y', 'Red', 'Green', 'Blue']
     
     filePath = tkinter.filedialog.askopenfilename()    
     fileName = Path(filePath).stem
     img = PIL.Image.open(filePath)
     img = img.convert('RGB')
-    newSize = img.resize((204, 204))
     
-    photo = PIL.ImageTk.PhotoImage(newSize)
-    myLabel = Label(image=photo)
-    myLabel.image = photo
-    myLabel.place(x= 50, y= 100)
+    labelCreate(img, 50, 100)
     
     w, h = img.size
     
-    for i in range(w):
-        x = i
-        y = 0
-        
-        for j in range(h):
-            y = j
+    for x in range(w):
+        for y in range(h):
             redValue = img.getpixel((x, y))[0]
             greenValue = img.getpixel((x,y))[1]
             blueValue = img.getpixel((x, y))[2]
             arr.append([x, y, redValue, greenValue, blueValue])
     
-    for item in arr:
-        key = ['x', 'y', 'Red', 'Green', 'Blue']
-        
-        d1 = zip(key, item)
-        l.append(dict(d1))
+    for item in arr:        
+        d1 = dict(zip(key, item))
+        l.append(d1)
         
     with open('hasil/value.txt', 'w') as f:
         for line in l:
             f.write("%s\n" % line)
-    
-    
+
+
 def newImage():
-    x = 0
-    y = 0
+    global copyImg
     size = w, h
     
-    img = PIL.Image.new('RGB', size)
-    load = img.load()
+    copyImg = PIL.Image.new('RGB', size)
+    load = copyImg.load()
     
     for item in arr:
         x, y, redValue, greenValue, blueValue = item
         load[x, y] = (redValue, greenValue, blueValue)
     
-    newSize = img.resize((204, 204))
-    photo = PIL.ImageTk.PhotoImage(newSize)
-    myLabel = Label(image=photo)
-    myLabel.image = photo
-    myLabel.place(x=300, y=100) 
+    labelCreate(copyImg, 300, 100)
+
+
+def rotateDeg(x, y, deg):
+    rad = radians(deg)
+    xh = x * cos(rad) - y * sin(rad)
+    yh = x * sin(rad) + y * cos(rad)
+    
+    return xh, yh
 
 
 def rotateImage():
     size = w, h
     
-    # userInput = simpledialog.askinteger(title="Input", prompt="Degrees")
+    userInput = simpledialog.askinteger(title="Input", prompt="Degrees")
 
     img = PIL.Image.new('RGB', size)
-    load = img.load()
     
-    wh = h
-    hh = w
     for item in arr:
         x, y, redValue, greenValue, blueValue = item
-        xh = wh - 1 - y
-        yh = x
-        load[xh, yh] = (redValue, greenValue, blueValue)
+        xh, yh = rotateDeg(x - w/2, y - h/2, userInput)
+        xh += w/2
+        yh += h/2
+        
+        if 0 <= xh < w and 0 <= yh < h:
+            img.putpixel((x, y), copyImg.getpixel((int(xh), int(yh))))
     
-    newSize = img.resize((204, 204))
-    photo = PIL.ImageTk.PhotoImage(newSize)
-    myLabel = Label(image=photo)
-    myLabel.image = photo
-    myLabel.place(x=550, y=100)
+    labelCreate(img, 550, 100)
+
+
+def button(root, text, command, x, y):
+    buttonH = 1
+    buttonW = 28
+    button = Button(root, text=text, command=command, height=buttonH, width=buttonW)
+    button.place(x= x, y= y)
 
 
 def flipImage(v):
@@ -111,53 +112,31 @@ def flipImage(v):
     img = PIL.Image.new('RGB', size)
     load = img.load()
     
-    match v:
-        case 1:
-            for item in arr:
-                x, y, redValue, greenValue, blueValue = item
+    for item in arr:
+        x, y, redValue, greenValue, blueValue = item
+        
+        match v:
+            case 1:
                 xh = w - 1 - x
                 yh = y
-                load[xh, yh] = (redValue, greenValue, blueValue)
-        case 2:
-            for item in arr:
-                x, y, redValue, greenValue, blueValue = item
+            case 2:
                 xh = x
                 yh = h - 1 - y
-                load[xh, yh] = (redValue, greenValue, blueValue)
-        case 3:
-            for item in arr:
-                x, y, redValue, greenValue, blueValue = item
+            case 3:
                 xh = w - 1 - x
                 yh = h - 1 - y
-                load[xh, yh] = (redValue, greenValue, blueValue)
+            
+        load[xh, yh] = (redValue, greenValue, blueValue)
                 
-    newSize = img.resize((204, 204))
-    photo = PIL.ImageTk.PhotoImage(newSize)
-    myLabel = Label(image=photo)
-    myLabel.image = photo
-    myLabel.place(x=550, y=100)
-    
-def button(root):
-    imH = 1
-    imW = 28
-    
-    openButton = Button(root, text='OPEN FILE', command=readPixel, height=imH, width=imW)
-    openButton.place(x= 50, y= 320)
-    
-    readButton = Button(root, text='READ IMAGE', command=newImage, height=imH, width=imW)
-    readButton.place(x= 300, y= 320)
-    
-    rotateButton = Button(root, text='ROTATE', command=rotateImage, height=imH, width=imW)
-    rotateButton.place(x=550, y=320)
-    
-    flipHorizontal = Button(root, text='FLIP HORIZONTAL', command= lambda: flipImage(1), height=imH, width=imW)
-    flipHorizontal.place(x=550, y= 350)
-    
-    flipVertical = Button(root, text='FLIP VERTIKAL', command= lambda: flipImage(2), height=imH, width=imW)
-    flipVertical.place(x=550, y= 380)
-    
-    flipComb = Button(root, text='FLIP BOTH', command= lambda: flipImage(3), height=imH, width=imW)
-    flipComb.place(x=550, y= 410)
+    labelCreate(img, 550, 100)
+
+
+def flipButton(root, text, x, y, v):
+    buttonH = 1
+    buttonW = 28
+    radiobutton = Button(root, text=f'FLIP {text}', height=buttonH, width=buttonW, command= lambda: flipImage(v))
+    radiobutton.place(x=x, y=y)
+  
     
 def main():
     root = Tk()
@@ -165,11 +144,18 @@ def main():
     root.configure(background='#242424')
     root.geometry("814x620")
     
-    labels(root)
-    button(root)
+    window(root)
     
+    button(root, 'OPEN FILE', readPixel, 50, 320)
+    button(root, 'READ IMAGE', newImage, 300, 320)
+    button(root, 'ROTATE IMAGE', rotateImage, 550, 410)
+    
+    flipButton(root, 'HORIZONTAL', 550, 320, 1)
+    flipButton(root, 'VERTICAL', 550, 350, 2)
+    flipButton(root, 'BOTH', 550, 380, 3)
     
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
