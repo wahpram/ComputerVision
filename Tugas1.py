@@ -29,35 +29,41 @@ def labelCreate(img, x, y):
     return newSize
 
 
-def readPixel(): 
+def readPixel(img, pathName): 
     global w, h, arr   
     arr = []
     l = []
     key = ['x', 'y', 'Red', 'Green', 'Blue']
     
-    filePath = tkinter.filedialog.askopenfilename()    
-    fileName = Path(filePath).stem
-    img = PIL.Image.open(filePath)
-    img = img.convert('RGB')
-    
-    resizedImg = labelCreate(img, 50, 100)
-    
-    w, h = resizedImg.size
+    w, h = img.size
     
     for x in range(w):
         for y in range(h):
-            redValue = resizedImg.getpixel((x, y))[0]
-            greenValue = resizedImg.getpixel((x,y))[1]
-            blueValue = resizedImg.getpixel((x, y))[2]
+            redValue = img.getpixel((x, y))[0]
+            greenValue = img.getpixel((x,y))[1]
+            blueValue = img.getpixel((x, y))[2]
             arr.append([x, y, redValue, greenValue, blueValue])
     
     for item in arr:        
         d1 = dict(zip(key, item))
         l.append(d1)
         
-    with open('hasil/value.txt', 'w') as f:
+    with open(f'hasil/{pathName}.txt', 'w') as f:
         for line in l:
             f.write("%s\n" % line)
+
+
+def openFile():
+    filePath = tkinter.filedialog.askopenfilename()    
+    # fileName = Path(filePath).stem
+    img = PIL.Image.open(filePath)
+    img = img.convert('RGB')
+    
+    pathName = 'Nilai_RGB'
+    
+    resizedImg = labelCreate(img, 50, 100)
+    
+    readPixel(resizedImg, pathName)
 
 
 def newImage():
@@ -99,6 +105,9 @@ def rotateImage():
             img.putpixel((x, y), copyImg.getpixel((int(xh), int(yh))))
     
     labelCreate(img, 550, 100)
+    
+    pathName = 'Nilai_RGB_Rotate'
+    readPixel(img, pathName)
 
 
 def button(root, text, command, x, y):
@@ -131,6 +140,9 @@ def flipImage(v):
         load[xh, yh] = (redValue, greenValue, blueValue)
                 
     labelCreate(img, 550, 100)
+    
+    pathName = 'Nilai_RGB_Flip'
+    readPixel(img, pathName)
 
 
 def flipButton(root, text, x, y, v):
@@ -148,7 +160,7 @@ def main():
     
     window(root)
     
-    button(root, 'OPEN FILE', readPixel, 50, 320)
+    button(root, 'OPEN FILE', openFile, 50, 320)
     button(root, 'READ IMAGE', newImage, 300, 320)
     button(root, 'ROTATE IMAGE', rotateImage, 550, 410)
     
