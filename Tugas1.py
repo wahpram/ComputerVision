@@ -25,6 +25,8 @@ def labelCreate(img, x, y):
     myLabel = Label(image=photo)
     myLabel.image = photo
     myLabel.place(x=x, y=y)
+    
+    return newSize
 
 
 def readPixel(): 
@@ -38,15 +40,15 @@ def readPixel():
     img = PIL.Image.open(filePath)
     img = img.convert('RGB')
     
-    labelCreate(img, 50, 100)
+    resizedImg = labelCreate(img, 50, 100)
     
-    w, h = img.size
+    w, h = resizedImg.size
     
     for x in range(w):
         for y in range(h):
-            redValue = img.getpixel((x, y))[0]
-            greenValue = img.getpixel((x,y))[1]
-            blueValue = img.getpixel((x, y))[2]
+            redValue = resizedImg.getpixel((x, y))[0]
+            greenValue = resizedImg.getpixel((x,y))[1]
+            blueValue = resizedImg.getpixel((x, y))[2]
             arr.append([x, y, redValue, greenValue, blueValue])
     
     for item in arr:        
