@@ -13,25 +13,19 @@ def window(root):
     newBlank = PIL.Image.new('RGB', (204, 204), (255, 255, 255))
     newBlank = PIL.ImageTk.PhotoImage(newBlank)
     label1 = Label(root, image=newBlank)
-    # label2 = Label(root, image=newBlank)
     label3 = Label(root, image=newBlank)
     label1.place(x=150, y=100)
-    # label2.place(x=300, y=100)
     label3.place(x=400, y=100)
 
 
 def labelCreate(img, x, y):
-    newSize = img.resize((204, 204))
-    photo = PIL.ImageTk.PhotoImage(newSize)
+    photo = PIL.ImageTk.PhotoImage(img)
     myLabel = Label(image=photo)
     myLabel.image = photo
     myLabel.place(x=x, y=y)
-    
-    return newSize
 
 
 def readPixel(img, pathName): 
-    global w, h 
     arr = []
     l = []
     key = ['x', 'y', 'Red', 'Green', 'Blue']
@@ -59,12 +53,12 @@ def readPixel(img, pathName):
 
 
 def openFile():
-    global resizedImg
+    global inputImg
     filePath = tkinter.filedialog.askopenfilename()    
-    img = PIL.Image.open(filePath)
-    img = img.convert('RGB')
+    inputImg = PIL.Image.open(filePath).resize((204, 204))
+    inputImg = inputImg.convert('RGB')
     
-    resizedImg = labelCreate(img, 150, 100)
+    labelCreate(inputImg, 150, 100)
     
 
 def newImage():
@@ -72,7 +66,7 @@ def newImage():
     image_arr = []
     
     pathName = 'Nilai_RGB'
-    image_arr = readPixel(resizedImg, pathName)
+    image_arr = readPixel(inputImg, pathName)
 
 
 def rotateDeg(x, y, deg):
@@ -84,7 +78,9 @@ def rotateDeg(x, y, deg):
 
 
 def rotateImage():
-    size = w, h
+    size = inputImg.size
+    w = inputImg.width
+    h = inputImg.height
     
     userInput = simpledialog.askinteger(title="Input", prompt="Degrees")
 
@@ -97,7 +93,7 @@ def rotateImage():
         yh += h/2
         
         if 0 <= xh < w and 0 <= yh < h:
-            img.putpixel((x, y), resizedImg.getpixel((int(xh), int(yh))))
+            img.putpixel((x, y), inputImg.getpixel((int(xh), int(yh))))
     
     labelCreate(img, 400, 100)
     
@@ -113,7 +109,9 @@ def button(root, text, command, x, y):
 
 
 def flipImage(v):
-    size = w, h 
+    size = inputImg.size
+    w = inputImg.width
+    h = inputImg.height
     
     img = PIL.Image.new('RGB', size)
     load = img.load()
@@ -150,7 +148,7 @@ def flipButton(root, text, x, y, v, command):
 
 
 def text(root, text, x, y):
-    l = Label(root, text=text).place(x=x, y=y)
+    Label(root, text=text).place(x=x, y=y)
     
 
 def exit(root):
