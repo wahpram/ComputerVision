@@ -1,9 +1,10 @@
 import PIL.Image
 import tkinter.filedialog
-from PIL import ImageTk
+import os
 from math import *
 from tkinter import *
 from array import *
+from PIL import ImageTk
 from pathlib import Path
 from tkinter import simpledialog
 
@@ -82,8 +83,8 @@ def newImage():
 
 def rotateDeg(x, y, deg):
     rad = radians(deg)
-    xh = x * cos(rad) - y * sin(rad)
-    yh = x * sin(rad) + y * cos(rad)
+    xh = x * cos(rad) + y * sin(rad)
+    yh = -(x * sin(rad)) + y * cos(rad)
     
     return xh, yh
 
@@ -106,7 +107,7 @@ def rotateImage():
     
     labelCreate(img, 550, 100)
     
-    pathName = 'Nilai_RGB_Rotate'
+    pathName = f'Nilai_RGB_Rotate_{userInput}'
     readPixel(img, pathName)
 
 
@@ -130,26 +131,42 @@ def flipImage(v):
             case 1:
                 xh = w - 1 - x
                 yh = y
+                pathName = 'Nilai_RGB_Flip_Horizontal'
             case 2:
                 xh = x
                 yh = h - 1 - y
+                pathName = 'Nilai_RGB_Flip_Vertical'
             case 3:
                 xh = w - 1 - x
                 yh = h - 1 - y
+                pathName = 'Nilai_RGB_Flip_Both'
             
         load[xh, yh] = (redValue, greenValue, blueValue)
                 
     labelCreate(img, 550, 100)
     
-    pathName = 'Nilai_RGB_Flip'
     readPixel(img, pathName)
 
 
-def flipButton(root, text, x, y, v):
+def flipButton(root, text, x, y, v, command):
     buttonH = 1
     buttonW = 28
-    radiobutton = Button(root, text=f'FLIP {text}', height=buttonH, width=buttonW, command= lambda: flipImage(v))
+    radiobutton = Button(root, text=text, height=buttonH, width=buttonW, command= lambda: command(v))
     radiobutton.place(x=x, y=y)
+
+
+def exit(root):
+    folder = 'hasil/'
+    for filename in os.listdir(folder):
+        filepath = os.path.join(folder, filename)
+        try:
+            os.remove(filepath)
+            print(f'{filepath} deleted!')
+        except Exception as e:
+            print(f'Delete failed, because {e}')
+    
+    root.destroy()
+    
   
     
 def main():
@@ -164,9 +181,11 @@ def main():
     button(root, 'READ IMAGE', newImage, 300, 320)
     button(root, 'ROTATE IMAGE', rotateImage, 550, 410)
     
-    flipButton(root, 'HORIZONTAL', 550, 320, 1)
-    flipButton(root, 'VERTICAL', 550, 350, 2)
-    flipButton(root, 'BOTH', 550, 380, 3)
+    flipButton(root, 'FLIP HORIZONTAL', 550, 320, 1, flipImage)
+    flipButton(root, 'FLIP VERTICAL', 550, 350, 2, flipImage)
+    flipButton(root, 'FLIP BOTH', 550, 380, 3, flipImage)
+    
+    flipButton(root, 'EXIT', 550, 440, root, exit)
     
     root.mainloop()
 
