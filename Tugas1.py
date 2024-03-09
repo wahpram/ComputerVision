@@ -13,11 +13,11 @@ def window(root):
     newBlank = PIL.Image.new('RGB', (204, 204), (255, 255, 255))
     newBlank = PIL.ImageTk.PhotoImage(newBlank)
     label1 = Label(root, image=newBlank)
-    label2 = Label(root, image=newBlank)
+    # label2 = Label(root, image=newBlank)
     label3 = Label(root, image=newBlank)
-    label1.place(x=50, y=100)
-    label2.place(x=300, y=100)
-    label3.place(x=550, y=100)
+    label1.place(x=150, y=100)
+    # label2.place(x=300, y=100)
+    label3.place(x=400, y=100)
 
 
 def labelCreate(img, x, y):
@@ -31,7 +31,7 @@ def labelCreate(img, x, y):
 
 
 def readPixel(img, pathName): 
-    global w, h, arr   
+    global w, h 
     arr = []
     l = []
     key = ['x', 'y', 'Red', 'Green', 'Blue']
@@ -52,33 +52,27 @@ def readPixel(img, pathName):
     with open(f'hasil/{pathName}.txt', 'w') as f:
         for line in l:
             f.write("%s\n" % line)
+    
+    img.save(f'hasil/{pathName}.jpg')
+    
+    return arr
 
 
 def openFile():
+    global resizedImg
     filePath = tkinter.filedialog.askopenfilename()    
-    # fileName = Path(filePath).stem
     img = PIL.Image.open(filePath)
     img = img.convert('RGB')
     
-    pathName = 'Nilai_RGB'
+    resizedImg = labelCreate(img, 150, 100)
     
-    resizedImg = labelCreate(img, 50, 100)
-    
-    readPixel(resizedImg, pathName)
-
 
 def newImage():
-    global copyImg
-    size = w, h
+    global image_arr
+    image_arr = []
     
-    copyImg = PIL.Image.new('RGB', size)
-    load = copyImg.load()
-    
-    for item in arr:
-        x, y, redValue, greenValue, blueValue = item
-        load[x, y] = (redValue, greenValue, blueValue)
-    
-    labelCreate(copyImg, 300, 100)
+    pathName = 'Nilai_RGB'
+    image_arr = readPixel(resizedImg, pathName)
 
 
 def rotateDeg(x, y, deg):
@@ -96,16 +90,16 @@ def rotateImage():
 
     img = PIL.Image.new('RGB', size)
     
-    for item in arr:
+    for item in image_arr:
         x, y, redValue, greenValue, blueValue = item
         xh, yh = rotateDeg(x - w/2, y - h/2, userInput)
         xh += w/2
         yh += h/2
         
         if 0 <= xh < w and 0 <= yh < h:
-            img.putpixel((x, y), copyImg.getpixel((int(xh), int(yh))))
+            img.putpixel((x, y), resizedImg.getpixel((int(xh), int(yh))))
     
-    labelCreate(img, 550, 100)
+    labelCreate(img, 400, 100)
     
     pathName = f'Nilai_RGB_Rotate_{userInput}'
     readPixel(img, pathName)
@@ -124,7 +118,7 @@ def flipImage(v):
     img = PIL.Image.new('RGB', size)
     load = img.load()
     
-    for item in arr:
+    for item in image_arr:
         x, y, redValue, greenValue, blueValue = item
         
         match v:
@@ -143,7 +137,7 @@ def flipImage(v):
             
         load[xh, yh] = (redValue, greenValue, blueValue)
                 
-    labelCreate(img, 550, 100)
+    labelCreate(img, 400, 100)
     
     readPixel(img, pathName)
 
@@ -155,6 +149,10 @@ def flipButton(root, text, x, y, v, command):
     radiobutton.place(x=x, y=y)
 
 
+def text(root, text, x, y):
+    l = Label(root, text=text).place(x=x, y=y)
+    
+
 def exit(root):
     folder = 'hasil/'
     for filename in os.listdir(folder):
@@ -164,10 +162,9 @@ def exit(root):
             print(f'{filepath} deleted!')
         except Exception as e:
             print(f'Delete failed, because {e}')
-    
+            
     root.destroy()
     
-  
     
 def main():
     root = Tk()
@@ -177,15 +174,18 @@ def main():
     
     window(root)
     
-    button(root, 'OPEN FILE', openFile, 50, 320)
-    button(root, 'READ IMAGE', newImage, 300, 320)
-    button(root, 'ROTATE IMAGE', rotateImage, 550, 410)
+    text(root, 'IMAGE INPUT', 215, 80)
+    text(root, 'IMAGE OUTPUT', 455, 80)
     
-    flipButton(root, 'FLIP HORIZONTAL', 550, 320, 1, flipImage)
-    flipButton(root, 'FLIP VERTICAL', 550, 350, 2, flipImage)
-    flipButton(root, 'FLIP BOTH', 550, 380, 3, flipImage)
+    button(root, 'OPEN FILE', openFile, 150, 320)
+    button(root, 'READ IMAGE', newImage, 150, 350)
+    button(root, 'ROTATE IMAGE', rotateImage, 400, 410)
     
-    flipButton(root, 'EXIT', 550, 440, root, exit)
+    flipButton(root, 'FLIP HORIZONTAL', 400, 320, 1, flipImage)
+    flipButton(root, 'FLIP VERTICAL', 400, 350, 2, flipImage)
+    flipButton(root, 'FLIP BOTH', 400, 380, 3, flipImage)
+    
+    flipButton(root, 'EXIT', 400, 440, root, exit)
     
     root.mainloop()
 
