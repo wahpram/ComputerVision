@@ -14,15 +14,15 @@ def window(root):
     newBlank = PIL.ImageTk.PhotoImage(newBlank)
     label1 = Label(root, image=newBlank)
     label3 = Label(root, image=newBlank)
-    label1.grid(row=1, column=0, sticky= NW, pady=10, padx=2)
-    label3.grid(row=1, column=1, sticky= NW, pady=10, padx=2)
+    label1.grid(row=1, column=0, sticky= W, pady=10, padx=2)
+    label3.grid(row=1, column=1, sticky= W, pady=10, padx=2)
 
 
 def labelCreate(img, x, y):
     photo = PIL.ImageTk.PhotoImage(img)
     myLabel = Label(image=photo)
     myLabel.image = photo
-    myLabel.grid(row=x, column=y, sticky= NW, pady=2, padx=2)
+    myLabel.grid(row=x, column=y, sticky= W, pady=2, padx=2)
 
 
 def saveFile(path, arrOld, arrNew):
@@ -52,10 +52,8 @@ def readPixel(img, pathName):
     
     for x in range(w):
         for y in range(h):
-            redValue = img.getpixel((x, y))[0]
-            greenValue = img.getpixel((x,y))[1]
-            blueValue = img.getpixel((x, y))[2]
-            arr.append([x, y, redValue, greenValue, blueValue])
+            rgb_value = img.getpixel((x, y))
+            arr.append([x, y, *rgb_value])
     
     img.save(f'hasil/{pathName}.jpg')
     
@@ -107,11 +105,8 @@ def rotateImage():
         yh += h/2
         
         if 0 <= xh < w and 0 <= yh < h:
-            new_r = inputImg.getpixel((int(xh), int(yh)))[0]
-            new_g = inputImg.getpixel((int(xh), int(yh)))[1]
-            new_b = inputImg.getpixel((int(xh), int(yh)))[2]
-            
-            load[x, y] = (new_r, new_g, new_b)
+            new_value = inputImg.getpixel((int(xh), int(yh)))
+            load[x, y] = (new_value)
     
     labelCreate(img, 1, 1)
     
@@ -120,7 +115,7 @@ def rotateImage():
     
     saveFile(pathName, image_arr, rotateArr)
 
-#tes
+
 def flipImage(v):
     size = inputImg.size
     w = inputImg.width
@@ -158,7 +153,7 @@ def button(root, text, command, x, y):
     buttonH = 1
     buttonW = 28
     button = Button(root, text=text, command=command, height=buttonH, width=buttonW)
-    button.grid(row=x, column=y, sticky= NW, padx=2)
+    button.grid(row=x, column=y, sticky= '', padx=2)
 
 
 def button2(root, text, x, y, v, command):
@@ -169,7 +164,7 @@ def button2(root, text, x, y, v, command):
 
 
 def text(root, text, row, column):
-    Label(root, text=text, width=28).grid(row=row, column=column, sticky= '', pady=2, padx=2)
+    Label(root, text=text, width=28, height=2).grid(row=row, column=column, sticky= '', pady=2, padx=2)
     
 
 def exit(root):
