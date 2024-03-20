@@ -26,6 +26,22 @@ def create_widgets(img, x, y):
     myLabel.grid(row=x, column=y, sticky= W, pady=2, padx=2)
 
 
+def create_button(root, text, command, x, y):
+    buttonH = 1
+    buttonW = 42
+    Button(root, text=text, command=command, height=buttonH, width=buttonW).grid(row=x, column=y, sticky= '', padx=2)
+
+
+def create_button2(root, text, x, y, v, command):
+    buttonH = 1
+    buttonW = 42
+    Button(root, text=text, height=buttonH, width=buttonW, command= lambda: command(v)).grid(row=x, column=y, sticky= '', padx=2)
+
+
+def create_text(root, text, row, column):
+    Label(root, text=text, width=42, height=2).grid(row=row, column=column, sticky= '', pady=2, padx=2)
+
+
 def msbox():
     messagebox.showerror('error', 'Make sure input image first')
     print(f'Input image is not defined')
@@ -68,12 +84,15 @@ def read_pixel_value(img, pathName):
 
 def open_file():
     global inputImg
-    filePath = tkinter.filedialog.askopenfilename()    
-    inputImg = PIL.Image.open(filePath).resize((300, 300))
-    inputImg = inputImg.convert('RGB')
     
-    create_widgets(inputImg, 1, 0)
+    try:
+        filePath = tkinter.filedialog.askopenfilename()    
+        inputImg = PIL.Image.open(filePath).resize((300, 300))
+        inputImg = inputImg.convert('RGB')
     
+        create_widgets(inputImg, 1, 0)
+    except:
+        return
 
 def read_image():
     global image_arr
@@ -164,44 +183,27 @@ def flip_image(v):
     
     except:
         msbox()
-
-
-def create_button(root, text, command, x, y):
-    buttonH = 1
-    buttonW = 42
-    Button(root, text=text, command=command, height=buttonH, width=buttonW).grid(row=x, column=y, sticky= '', padx=2)
-
-
-def create_button2(root, text, x, y, v, command):
-    buttonH = 1
-    buttonW = 42
-    Button(root, text=text, height=buttonH, width=buttonW, command= lambda: command(v)).grid(row=x, column=y, sticky= '', padx=2)
-
-
-def create_text(root, text, row, column):
-    Label(root, text=text, width=42, height=2).grid(row=row, column=column, sticky= '', pady=2, padx=2)
     
 
 def exit(root):
     folder = 'hasil/'
     
-    for filename in os.listdir(folder):
-        filepath = os.path.join(folder, filename)
-        try:
-            os.remove(filepath)
-            print(f'{filepath} deleted!')
-        except Exception as e:
-            print(f'Delete failed, because {e}')
-    
     res = messagebox.askquestion('exit', 'Are you sure?')
     
     if res == 'yes':
+        for filename in os.listdir(folder):
+            filepath = os.path.join(folder, filename)
+            try:
+                os.remove(filepath)
+                print(f'{filepath} deleted!')
+            except Exception as e:
+                print(f'Delete failed, because {e}')
+            
         root.destroy()
     else:
         messagebox.showinfo('return', 'Returning to app')
     
 
-    
 def main():
     root = Tk()
     root.title("Read Pixel Value of Image")
