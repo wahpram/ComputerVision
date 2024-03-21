@@ -149,6 +149,41 @@ def rotate_image():
     except:
         msbox()
 
+
+def rotate_image2(v):
+    try:
+        size = inputImg.size
+        w = inputImg.width
+        h = inputImg.height
+        
+        img = PIL.Image.new('RGB', size)
+        load = img.load()
+        
+        for item in image_arr:
+            x, y, redValue, greenValue, blueValue = item
+            
+            match v:
+                case 1:
+                    wn = h
+                    hn = w
+                    xn = wn - 1 - y
+                    yn = x
+                    pathName = f'Rotate_90°'
+                case 2:
+                    xn = w - 1 - x
+                    yn = h - 1 - y
+                    pathName = f'Rotate_180°'
+            
+            load[xn, yn] = (redValue, greenValue, blueValue)
+            
+        create_widgets(img, 1, 1)
+        rotateArr = read_pixel_value(img, pathName)
+        save_file(pathName, image_arr, rotateArr)
+    
+    except:
+        msbox()
+    
+
 def flip_image(v):
     try:
         size = inputImg.size
@@ -163,19 +198,19 @@ def flip_image(v):
             
             match v:
                 case 1:
-                    xh = w - 1 - x
-                    yh = y
+                    xn = w - 1 - x
+                    yn = y
                     pathName = 'Flip_Horizontal'
                 case 2:
-                    xh = x
-                    yh = h - 1 - y
+                    xn = x
+                    yn = h - 1 - y
                     pathName = 'Flip_Vertical'
                 case 3:
-                    xh = w - 1 - x
-                    yh = h - 1 - y
+                    xn = w - 1 - x
+                    yn = h - 1 - y
                     pathName = 'Flip_Both'
                 
-            load[xh, yh] = (redValue, greenValue, blueValue)
+            load[xn, yn] = (redValue, greenValue, blueValue)
                     
         create_widgets(img, 1, 1)
         flipArr = read_pixel_value(img, pathName)
@@ -183,7 +218,7 @@ def flip_image(v):
     
     except:
         msbox()
-    
+
 
 def exit(root):
     folder = 'hasil/'
@@ -216,11 +251,13 @@ def main():
     
     create_button(root, 'OPEN FILE', open_file, 2, 0)
     create_button(root, 'READ IMAGE', read_image, 3, 0)
-    create_button(root, 'ROTATE IMAGE', rotate_image, 2, 1)
     
-    create_button2(root, 'FLIP HORIZONTAL', 3, 1, 1, flip_image)
-    create_button2(root, 'FLIP VERTICAL', 4, 1, 2, flip_image)
-    create_button2(root, 'FLIP VERTICAL & HORIZONTAL', 5, 1, 3, flip_image)
+    create_button(root, 'ROTATE IMAGE', rotate_image, 2, 1)
+    create_button2(root, 'ROTATE IMAGE 90°', 3, 1, 1, rotate_image2)
+    create_button2(root, 'ROTATE IMAGE 180°', 4, 1, 2, rotate_image2)
+    create_button2(root, 'FLIP HORIZONTAL', 5, 1, 1, flip_image)
+    create_button2(root, 'FLIP VERTICAL', 6, 1, 2, flip_image)
+    create_button2(root, 'FLIP VERTICAL & HORIZONTAL', 7, 1, 3, flip_image)
     
     create_button2(root, 'EXIT', 4, 0, root, exit)
     
