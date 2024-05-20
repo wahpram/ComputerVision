@@ -9,7 +9,7 @@ from pathlib import Path
 from tkinter import simpledialog
 from tkinter import messagebox
 
-#tes
+
 def create_window(root):
     newBlank = PIL.Image.new('RGB', (300, 300), (255, 255, 255))
     newBlank = PIL.ImageTk.PhotoImage(newBlank)
@@ -68,6 +68,7 @@ def save_file(path, arrOld, arrNew):
     
 
 def read_pixel_value(img, pathName):
+    global arr
     arr = []
     
     w, h = img.size
@@ -107,46 +108,6 @@ def read_image():
         save_file(pathName, image_arr, image_arr)
     
     except NameError:
-        msbox()
-
-
-def rotate_degree(x, y, deg):
-    rad = radians(deg)
-    xh = x * cos(rad) + y * sin(rad)
-    yh = -(x * sin(rad)) + y * cos(rad)
-    
-    return xh, yh
-
-
-def rotate_image():
-    try:
-        size = inputImg.size
-        w = inputImg.width
-        h = inputImg.height
-        
-        userInput = simpledialog.askinteger(title="Input", prompt="Degrees")
-
-        img = PIL.Image.new('RGB', size)
-        load = img.load()
-        
-        for item in image_arr:
-            x, y, redValue, greenValue, blueValue = item
-            xh, yh = rotate_degree(x - w/2, y - h/2, userInput)
-            xh += w/2
-            yh += h/2
-            
-            if 0 <= xh < w and 0 <= yh < h:
-                new_value = inputImg.getpixel((int(xh), int(yh)))
-                load[x, y] = (new_value)
-        
-        create_widgets(img, 1, 1)
-        
-        pathName = f'Rotate_{userInput}'
-        rotateArr = read_pixel_value(img, pathName)
-        
-        save_file(pathName, image_arr, rotateArr)
-    
-    except:
         msbox()
 
 
@@ -252,12 +213,11 @@ def main():
     create_button(root, 'OPEN FILE', open_file, 2, 0)
     create_button(root, 'READ IMAGE', read_image, 3, 0)
     
-    create_button(root, 'ROTATE IMAGE', rotate_image, 2, 1)
-    create_button2(root, 'ROTATE IMAGE 90°', 3, 1, 1, rotate_image2)
-    create_button2(root, 'ROTATE IMAGE 180°', 4, 1, 2, rotate_image2)
-    create_button2(root, 'FLIP HORIZONTAL', 5, 1, 1, flip_image)
-    create_button2(root, 'FLIP VERTICAL', 6, 1, 2, flip_image)
-    create_button2(root, 'FLIP VERTICAL & HORIZONTAL', 7, 1, 3, flip_image)
+    create_button2(root, 'ROTATE IMAGE 90°', 2, 1, 1, rotate_image2)
+    create_button2(root, 'ROTATE IMAGE 180°', 3, 1, 2, rotate_image2)
+    create_button2(root, 'FLIP HORIZONTAL', 4, 1, 1, flip_image)
+    create_button2(root, 'FLIP VERTICAL', 5, 1, 2, flip_image)
+    create_button2(root, 'FLIP VERTICAL & HORIZONTAL', 6, 1, 3, flip_image)
     
     create_button2(root, 'EXIT', 4, 0, root, exit)
     
